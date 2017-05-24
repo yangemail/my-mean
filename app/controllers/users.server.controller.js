@@ -39,6 +39,15 @@ exports.findUsernameAndPassword = function (req, res, next) {
         })
 };
 
+// Demo findOneByUserName (statics method in User Model)
+exports.findOneByUsername = function (req, res, next) {
+    User.findOneByUsername('username', function (err, user) {
+        //...
+    })
+};
+
+// Demo -> user.authenticate('password')
+
 exports.read = function (req, res) {
     res.json(req.user);
 };
