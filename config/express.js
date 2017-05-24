@@ -7,6 +7,7 @@ var express = require('express'),
 module.exports = function () {
     var app = express();
 
+    // Environment set up
     if (process.env.NODE_ENV === 'development') {
         app.use(morgan('dev'));
     } else if (process.env.NODE_ENV === 'production') {
@@ -19,6 +20,11 @@ module.exports = function () {
     app.use(bodyParser.json());
     app.use(methodOverride());
 
+    // Set EJS as the default template engine
+    app.set('views', './app/views');
+    app.set('view engine', 'ejs');
+
+    // Routes
     require('../app/routes/index.server.routes')(app);
 
     return app;
