@@ -4,16 +4,31 @@ var mongoose = require('mongoose'),
 var UserSchema = new Schema({
     firstName: String,
     lastName: String,
+    role: {
+        type: String,
+        enum: ['Admin', 'Owner', 'User']
+    },
     email: {
-        type: String
-        //index: true
+        type: String,
+        index: true,
+        match: /.+\@.+\..+/
     },
     username: {
         type: String,
         trim: true,
-        unique: true
+        unique: true,
+        required: true
     },
-    password: String,
+    password: {
+        type: String,
+        // Customized validator
+        validate: [
+            function (password) {
+                return password.length >= 6;
+            },
+            'Password should be longer'
+        ]
+    },
     website: {
         type: String,
         set: function (url) {
@@ -45,6 +60,24 @@ var UserSchema = new Schema({
         default: Date.now
     }
 });
+
+// pre: init, validate, save, remove
+UserSchema.pre('save', function (next) {
+    if (1) {
+        next();
+    } else {
+        next(new Error('An Error Occured.'));
+    }
+});
+
+// post:
+UserSchema.post('save', function (next) {
+    if(this.isNew) {
+        console.log('A new user was created.');
+    } else {
+        console.log('A user updated is details.');
+    }
+})
 
 // Virtual value (Important)
 UserSchema.virtual('fullName').get(function () {
