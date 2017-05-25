@@ -4,7 +4,9 @@ var config = require('./config'),
     compress = require('compression'),
     bodyParser = require('body-parser'),
     methodOverride = require('method-override'),
-    session = require('express-session');
+    session = require('express-session'),
+    flash = require('connect-flash'),
+    passport = require('passport');
 
 module.exports = function () {
     var app = express();
@@ -32,6 +34,13 @@ module.exports = function () {
     // Set EJS as the default template engine
     app.set('views', './app/views');
     app.set('view engine', 'ejs');
+
+    // flash
+    app.use(flash());
+
+    // Passport
+    app.use(passport.initialize());
+    app.use(passport.session());
 
     // Routes
     require('../app/routes/index.server.routes')(app);
