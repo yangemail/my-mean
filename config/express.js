@@ -35,16 +35,16 @@ module.exports = function () {
     app.set('views', './app/views');
     app.set('view engine', 'ejs');
 
-    // flash
+    // flash module
     app.use(flash());
 
-    // Passport
+    // Passport module
     app.use(passport.initialize());
     app.use(passport.session());
 
     // Routes
-    require('../app/routes/index.server.routes')(app);
-    require('../app/routes/users.server.routes')(app);
+    require('../app/routes/index.server.routes.js')(app);
+    require('../app/routes/users.server.routes.js')(app);
 
     // static contents
     app.use(express.static('./public'));

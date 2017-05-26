@@ -7,7 +7,7 @@ var mongoose = require('./config/mongoose'),
 // Mongoose must be the top priority to load
 var db = mongoose();
 var app = express();
-var Passport = passport();
+var passport = passport();
 
 app.listen(3000);
 

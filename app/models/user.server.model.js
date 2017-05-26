@@ -90,13 +90,13 @@ UserSchema.pre('save', function (next) {
 });
 
 // post:
-UserSchema.post('save', function (next) {
-    if (this.isNew) {
-        console.log('A new user was created.');
-    } else {
-        console.log('A user updated is details.');
-    }
-});
+// UserSchema.post('save', function (next) {
+//     if (this.isNew) {
+//         console.log('A new user was created.');
+//     } else {
+//         console.log('A user updated is details.');
+//     }
+// });
 
 UserSchema.methods.hashPassword = function (password) {
     return crypto.pbkdf2Sync(password, this.salt, 10000, 64)
