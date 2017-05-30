@@ -4,8 +4,7 @@
     <title><%= title %></title>
 </head>
 <body>
-<% if(userFullName){ %>
-<h2>Hello <%= userFullName %></h2>
+<% if(user){ %>
 <a href="/signout">Sign out</a>
 <% } else { %>
 <a href="/signup">Signup</a>
@@ -21,6 +20,10 @@
 <!--<section ng-include="'example/views/example.client.view.html'"></section>-->
 <section ng-view></section>
 
+<script type="text/javascript">
+    window.user = <%- user || 'null' %>
+</script>
+
 <script src="http://code.angularjs.org/1.6.4/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.js"></script>
 
@@ -29,6 +32,9 @@
 
 <!-- Routes -->
 <script type="text/javascript" src="/example/config/example.client.routes.js"></script>
+
+<script type="text/javascript" src="/users/users.client.module.js"></script>
+<script type="text/javascript" src="/users/services/authentication.client.service.js"></script>
 
 <script type="text/javascript" src="/application.js"></script>
 
