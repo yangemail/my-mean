@@ -1,18 +1,20 @@
 exports.render = function (req, res) {
-    // if (req.session.lastVisit) {
-    //     console.log("Last Visit: " + req.session.lastVisit);
-    // }
-    // req.session.lastVisit = new Date();
+    if (req.session.lastVisit) {
+        console.log("Last Visit: " + req.session.lastVisit);
+    }
+    req.session.lastVisit = new Date();
 
-// }
-// res.render('index', {
-//     title: 'Hello World',
-//     userFullName: req.user ? req.user.fullName : ''
-// });
-// res.send('Hello World');
-
+    // 'index' is the ejs template name
     res.render('index', {
+        // parameters in the ejs template
         title: 'Hello World',
-        user: JSON.stringify(req.user)
+        userFullName: req.user ? req.user.fullName : ''
     });
+
+    // res.send('Hello World');
+
+    // res.render('index', {
+    //     title: 'Hello World',
+    //     user: JSON.stringify(req.user)
+    // });
 };

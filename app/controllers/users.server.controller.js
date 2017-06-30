@@ -113,7 +113,9 @@ exports.saveOAuthUserProfile = function (req, profile, done) {
     });
 };
 
+// Create
 exports.create = function (req, res, next) {
+    // New instance
     var user = new User(req.body);
 
     user.save(function (err) {
@@ -132,7 +134,7 @@ exports.list = function (req, res, next) {
         } else {
             res.json(users);
         }
-    })
+    });
 };
 
 // Demo purpose only

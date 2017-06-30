@@ -1,10 +1,12 @@
-var config = require('./config'),
-    express = require('express'),
-    morgan = require('morgan'),
-    compress = require('compression'),
-    bodyParser = require('body-parser'),
-    methodOverride = require('method-override'),
-    session = require('express-session'),
+var config = require('./config'), // calling config script
+
+    express = require('express'), // express
+    morgan = require('morgan'), // log middleware
+    compress = require('compression'), // compress
+    bodyParser = require('body-parser'), // data request middleware
+    methodOverride = require('method-override'), // supports DELETE and PUT
+    session = require('express-session'), // Session
+
     flash = require('connect-flash'),
     passport = require('passport');
 
@@ -24,7 +26,7 @@ module.exports = function () {
     app.use(bodyParser.json());
     app.use(methodOverride());
 
-    // Session configuration
+    // User session enable
     app.use(session({
         saveUninitialized: true,
         resave: true,
@@ -32,7 +34,9 @@ module.exports = function () {
     }));
 
     // Set EJS as the default template engine
+    // Set VIEW directory, this will search template folder, replaced by template content
     app.set('views', './app/views');
+    // Set EJS as the template engine
     app.set('view engine', 'ejs');
 
     // flash module
@@ -43,10 +47,13 @@ module.exports = function () {
     app.use(passport.session());
 
     // Routes
+    // Index router
     require('../app/routes/index.server.routes.js')(app);
+    // Users router
     require('../app/routes/users.server.routes.js')(app);
 
     // static contents
+    // Need to put under the routers, if routers don't have response, then static contents jump in
     app.use(express.static('./public'));
 
     return app;

@@ -4,11 +4,10 @@ var mongoose = require('./config/mongoose'),
     express = require('./config/express'),
     passport = require('./config/passport');
 
-// Mongoose must be the top priority to load
+// Mongoose must be first priority, in order to load first
 var db = mongoose();
 var app = express();
 var passport = passport();
-
 app.listen(3000);
 
 module.exports = app;
