@@ -1,86 +1,86 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    crypto = require('crypto');
+const mongoose = require('mongoose');
+const crypto = require('crypto');
+const Schema = mongoose.Schema;
 
-var UserSchema = new Schema({
+const UserSchema = new Schema({
     firstName: String,
     lastName: String,
     email: {
         type: String,
-        // index: true,
-        match: [/.+\@.+\..+/, "Please fill a valid e-mail address"]
+        index: true,
+        match: /.+\@.+\..+/
     },
-    // role: {
-    //     type: String,
-    //     enum: ['Admin', 'Owner', 'User']
-    // },
     username: {
         type: String,
+        trim: true,
         unique: true,
-        // required: true
-        required: 'Username is required',
-        trim: true
+        required: true
+    },
+    role: {
+        type: String,
+        enum: ['Admin', 'Owner', 'User']
     },
     password: {
         type: String,
-        // Customized validator
         validate: [
             function (password) {
-                return password && password.length > 6;
-            }, 'Password should be longer'
+                return password.length >= 6;
+            },
+            'Password should be longer'
         ]
     },
-    salt: { // hash to password
+    salt: {
         type: String
     },
-    provider: { // password type
+    provider: {
         type: String,
         required: 'Provider is required'
     },
-    providerId: String, // identify for user identification
-    providerData: {}, // save for OAuth information
-    // website: {
-    //     type: String,
-    //     set: function (url) {
-    //         if (!url) {
-    //             return url;
-    //         } else {
-    //             if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0) {
-    //                 url = 'http://' + url;
-    //             }
-    //             return url;
-    //         }
-    //     }
-    // },
-    // website2: {
-    //     type: String,
-    //     get: function (url) {
-    //         if (!url) {
-    //             return url;
-    //         } else {
-    //             if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0) {
-    //                 url = 'http://' + url;
-    //             }
-    //             return url;
-    //         }
-    //     }
-    // },
+    providerId: String,
+    providerData: {},
     created: {
         type: Date,
         default: Date.now
+    },
+    website: {
+        type: String,
+        set: function (url) {
+            if (!url) {
+                return url;
+            } else {
+                if (url.indexOf('http://') !== 0 &&
+                    url.indexOf('https://') !== 0) {
+                    url = 'http://' + url
+                }
+                return url;
+            }
+        },
+        get: function (url) {
+            if (!url) {
+                return url;
+            } else {
+                if (url.indexOf('http://') !== 0 &&
+                    url.indexOf('https://') !== 0) {
+                    url = 'http://' + url;
+                }
+                return url
+            }
+        }
     }
 });
 
-// Virtual value (Important)
-UserSchema.virtual('fullName').get(function () {
-    return this.firstName + ' ' + this.lastName;
-}).set(function (fullName) {
-    var splitName = fullName.split(' ');
-    this.firstName = splitName[0] || '';
-    this.lastName = splitName[1] || '';
-});
+UserSchema
+    .virtual('fullName')
+    .get(function () {
+        return this.firstName + ' ' + this.lastName;
+    })
+    .set(function (fullName) {
+        const splitName = fullName.split(' ');
+        this.firstName = splitName[0] || '';
+        this.lastName = splitName[1] || '';
+    });
 
-// pre: init, validate, save, remove
+// pre middleware
 UserSchema.pre('save', function (next) {
     if (this.password) {
         this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
@@ -89,41 +89,32 @@ UserSchema.pre('save', function (next) {
     next();
 });
 
-// post:
-// UserSchema.post('save', function (next) {
-//     if (this.isNew) {
-//         console.log('A new user was created.');
-//     } else {
-//         console.log('A user updated is details.');
-//     }
-// });
-
+// Custom instance methods
 UserSchema.methods.hashPassword = function (password) {
-    return crypto.pbkdf2Sync(password, this.salt, 10000, 64)
-        .toString('base64');
+    return crypto.pbkdf2Sync(password, this.salt, 10000, 64).toString('base64');
 };
 
 UserSchema.methods.authenticate = function (password) {
-    return this.password === this.hashPassword(password);
+    return this.password = this.hashPassword(password);
 };
 
-// New customized static methods
-// UserSchema.statics.findOneByUsername = function (username, callback) {
-//     this.findOne({username: new RegExp(username, 'i')}, callback);
-// }
+// custom static methods
+UserSchema.static.findOneByUsername = function (username, callback) {
+    this.findOne({
+        username: new RegExp(username, 'i')
+    }, callback);
+};
 
 UserSchema.static.findUniqueUsername = function (username, suffix, callback) {
-    var _this = this;
     var possibleUsername = username + (suffix || '');
-
-    _this.findOne({
+    this.findOne({
         username: possibleUsername
     }, function (err, user) {
         if (!err) {
             if (!user) {
                 callback(possibleUsername);
             } else {
-                return _this.findUniqueUsername(username, (suffix || 0) + 1, callback);
+                return this.findUniqueUsername(username, (suffix || 0) + 1, callback);
             }
         } else {
             callback(null);
@@ -131,10 +122,14 @@ UserSchema.static.findUniqueUsername = function (username, suffix, callback) {
     });
 };
 
-// Enable getter (default value is disabled)
+// post middleware
+UserSchema.post('save', function (next) {
+    console.log('The user "' + this.username + '" details were saved.');
+});
+
 UserSchema.set('toJSON', {
     getters: true,
-    virtual: true
+    virtuals: true
 });
 
 mongoose.model('User', UserSchema);

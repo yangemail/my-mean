@@ -1,12 +1,10 @@
-/* Mongoose DBRef example */
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
-
-var PostSchema = new Schema({
+const PostSchema = new Schema({
     title: {
         type: String,
-        require: true
+        required: true
     },
     content: {
         type: String,

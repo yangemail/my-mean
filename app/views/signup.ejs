@@ -6,10 +6,9 @@
     </title>
 </head>
 <body>
-<% for (var i in messages) { %>
+<% for(var i in message) { %>
 <div class="flash"><%= messages[i] %></div>
 <% } %>
-
 <form action="/signup" method="post">
     <div>
         <label>First Name:</label>
@@ -17,11 +16,11 @@
     </div>
     <div>
         <label>Last Name:</label>
-        <input type="text" name="lastName">
+        <input type="text" name="lastName"/>
     </div>
     <div>
         <label>Email:</label>
-        <input type="text" name="email">
+        <input type="text" name="email"/>
     </div>
     <div>
         <label>Username:</label>

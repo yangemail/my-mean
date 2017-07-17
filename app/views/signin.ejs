@@ -6,12 +6,12 @@
     </title>
 </head>
 <body>
-<% for(var i in messages) { %>
+<% for(var i in message) { %>
 <div class="flash"><%= messages[i] %></div>
 <% } %>
 <form action="/signin" method="post">
     <div>
-        <label>Username:</label>
+        <label>Username: </label>
         <input type="text" name="username"/>
     </div>
     <div>

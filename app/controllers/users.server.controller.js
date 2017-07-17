@@ -1,7 +1,7 @@
-var User = require('mongoose').model('User'),
-    passport = require('passport');
+const User = require('mongoose').model('User');
+const passport = require('passport');
 
-var getErrorMessage = function (err) {
+function getErrorMessage(err) {
     var message = '';
 
     if (err.code) {
@@ -45,22 +45,18 @@ exports.renderSignup = function (req, res, next) {
     }
 };
 
-exports.signup = function (req, res, next) {
-    if (!req.user) {
-        var user = new User(req.body);
-        // var message = null;
-
+exports.signup = function(req, res, next) {
+    if(!req.user) {
+        const user = new User(req.body);
         user.provider = 'local';
 
         user.save(function (err) {
             if (err) {
-                var message = getErrorMessage(err);
+                const message = getErrorMessage(err);
 
-                // write error message into flash
                 req.flash('error', message);
                 return res.redirect('/signup');
             }
-
             req.login(user, function (err) {
                 if (err) {
                     return next(err);
@@ -73,56 +69,21 @@ exports.signup = function (req, res, next) {
     }
 };
 
-exports.signout = function (req, res) {
+exports.signout = function(req, res) {
     req.logout();
     res.redirect('/');
 };
 
-exports.saveOAuthUserProfile = function (req, profile, done) {
-    User.findOne({
-        provider: profile.provider,
-        providerId: profile.providerId
-    }, function (err, user) {
-        if (err) {
-            return done(err);
-        } else {
-            if (!user) {
-                var possibleUsername = profile.username ||
-                    ((profile.email) ? profile.email.split('@')[0] : '');
-
-                User.findUniqueUsername(possibleUsername, null, function (availableUsername) {
-                    profile.username = availableUsername;
-
-                    user = new User(profile);
-
-                    user.save(function (err) {
-                        if (err) {
-                            var message = _this.getErrorMessage(err);
-
-                            req.flash('error', message);
-                            return res.redirect('/signup');
-                        }
-
-                        return done(err, user);
-                    });
-                });
-            } else {
-                return done(err, user);
-            }
-        }
-    });
-};
-
-// Create
 exports.create = function (req, res, next) {
-    // New instance
-    var user = new User(req.body);
+    console.log(req);
+
+    const user = new User(req.body);
 
     user.save(function (err) {
         if (err) {
             return next(err);
         } else {
-            res.json(user);
+            res.status(200).json(user);
         }
     });
 };
@@ -132,36 +93,33 @@ exports.list = function (req, res, next) {
         if (err) {
             return next(err);
         } else {
-            res.json(users);
+            res.status(200).json(users);
         }
     });
 };
 
-// Demo purpose only
-exports.findUsernameAndPassword = function (req, res, next) {
-    User.find({},
-        'username email',
-        {
-            skip: 10,
-            limit: 10
-        },
-        function (err, users) {
-            if (err) {
-                return next(err);
-            } else {
-                return res.json(users);
-            }
-        })
+exports.listUsernameEmail = function (req, res, next) {
+    User.find({}, "username email", function (err, users) {
+        if (err) {
+            next(err);
+        } else {
+            res.status(200).json(users);
+        }
+    });
 };
 
-// Demo findOneByUserName (statics method in User Model)
-exports.findOneByUsername = function (req, res, next) {
-    User.findOneByUsername('username', function (err, user) {
-        //...
-    })
+exports.listUsernameEmailLimited = function (req, res, next) {
+    User.find({}, "username email", {
+        skip: 10,
+        limit: 10
+    }, function (err, users) {
+        if (err) {
+            next(err);
+        } else {
+            res.status(200).json(users);
+        }
+    });
 };
-
-// Demo -> user.authenticate('password')
 
 exports.read = function (req, res) {
     res.json(req.user);
@@ -169,7 +127,7 @@ exports.read = function (req, res) {
 
 exports.userByID = function (req, res, next, id) {
     User.findOne({
-        // _id: id
+        _id: id
     }, function (err, user) {
         if (err) {
             return next(err);
@@ -181,13 +139,16 @@ exports.userByID = function (req, res, next, id) {
 };
 
 exports.update = function (req, res, next) {
-    User.findByIdAndUpdate(req.user.id, req.body, function (err, user) {
+    User.findByIdAndUpdate(req.user.id, req.body, {
+        // set the "new" option to "true", making sure that to receive the updated document.
+        'new': true
+    }, function (err, user) {
         if (err) {
             return next(err);
         } else {
-            res.json(user);
+            res.status(200).json(user);
         }
-    })
+    });
 };
 
 exports.delete = function (req, res, next) {
@@ -195,7 +156,17 @@ exports.delete = function (req, res, next) {
         if (err) {
             return next(err);
         } else {
-            res.json(req.user);
+            res.status(200).json(req.user);
         }
-    })
+    });
+};
+
+exports.findByUsername = function (req, res, next) {
+    User.findOneByUsername('username', function (err, user) {
+        if (err) {
+            return next(err);
+        } else {
+            ;
+        }
+    });
 }

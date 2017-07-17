@@ -1,13 +1,13 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-var mongoose = require('./config/mongoose'),
-    express = require('./config/express'),
-    passport = require('./config/passport');
+const configureMongoose = require('./config/mongoose');
+const configureExpress = require('./config/express');
+const configurePassport = require('./config/passport');
 
-// Mongoose must be first priority, in order to load first
-var db = mongoose();
-var app = express();
-var passport = passport();
+// Make sure that your Mongoose configuration file is loaded before any other configuration is performed in the server.js file.
+const db = configureMongoose();
+const app = configureExpress();
+const passport = configurePassport();
 app.listen(3000);
 
 module.exports = app;
